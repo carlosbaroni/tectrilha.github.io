@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-	<title>Logs</title>
+	<title>LogWeb</title>
 
 	<!-- Bootstrap CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -20,126 +20,139 @@
 
 <body>
 	<div id="app" class="container">
-		<h1>Logs de Procedures</h1>
-		<br />
-		<h2>Municípios</h2>
-		<div class="form-group ">
-			<label for="selectPrazo">Dados no período de: </label>
-			<select v-model="diasMunicipiosLog" id="selectPrazo" name="selectPrazo" class="form-control">
-				<option value="1">24 horas</option>
-				<option value="7">1 semana</option>
-				<option value="30">1 mês</option>
-			</select>
-			<small id="emailHelp" class="form-text text-muted">Intervalo dos dados importados.</small>
-		</div>
-		
-		<div class="row">
-			<div class="col-4" v-for="ml in municipiosLog">
-				<div class="card">
-					<!-- <h5 class="card-header"> -->
-						<!-- {{ ml.municipio.nome }} -->
-					<!-- </h5> -->
-				  <div class="card-body">
-					<h5 class="card-title">{{ ml.municipio.nome }}</h5>
-					<h6 v-if="diasMunicipiosLog == 1" class="card-subtitle mb-2 text-muted">Nas últimas 24 horas</h6>
-					<h6 v-else class="card-subtitle mb-2 text-muted">Nos últimos {{ diasMunicipiosLog }} dias</h6>
-					<p class="card-text">
-						<div>Logs de Procedures: <span class="badge badge-secondary">{{ ml.qtdLogProcedureTotal }}</span></div>
-						<div>Erros de Procedures: <span class="badge badge-danger">{{ ml.qtdLogProcedureErro }}</span></div>
-						<div>Erros de Sistemas: <span class="badge badge-danger">{{ ml.qtdLogErro }}</span></div>
-					</p>
-					<a href="#" class="btn btn-primary" v-on:click="atualizaLogProcedureMunicipio(ml.municipio), atualizaLogErroMunicipio(ml.municipio)">Detalhes</a>
-				  </div>
-				  <div class="card-footer text-muted">
-					<small>última importação - <i>{{ ml.dataUltimaImportacao }}</i></small>
-                  </div>
-				</div>			
+
+		<h1>LogWeb</h1>
+		<form class="form-inline">
+			<div class="form-group mb-2">
+				<label for="inputChave" class="sr-only">Chave</label>
+				<input type="password" class="form-control" id="inputChave" placeholder="Chave" style="width: 400px" v-model="chave">
 			</div>
-		</div>
+			<button type="submit" class="btn btn-primary mb-2" @click="atualizaChave()">Confirmar</button>
+		</form>
 		<br />
-		<div v-if="municipio">
-			<h2>{{ municipio.nome }}</h2>
-			<ul class="nav nav-tabs" role="tablist">
-				<li class="nav-item">
-					<a class="nav-link active" id="logProcedure-tab" data-toggle="tab" href="#logProcedure" role="tab" aria-controls="home" aria-selected="true">Log Procedure</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" id="logErro-tab" data-toggle="tab" href="#logErro" role="tab" aria-controls="home" aria-selected="true">Log Erro Sistema</a>
-				</li>
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane fade show active" id="logProcedure" role="tabpanel" aria-labelledby="logProcedure-tab">
-					<br />
-					<div v-if="logProcedureMunicipio">
-						<form>
-							<div class="form-group">
-								<label for="selectPrazoMunicipio">Dados no período de: </label>
-								<select v-model="diasLogProcedureMunicipio" id="selectPrazoMunicipio" name="selectPrazoMunicipio" class="form-control">
-									<option value="1">24 horas</option>
-									<option value="2">2 dias</option>
-									<option value="3">3 dias</option>
-									<option value="7">1 semana</option>
-									<option value="30">1 mês</option>
-								</select>
-							</div>
-							<div class="form-group form-check">
-								<input v-model="somenteErro" type="checkbox" id="erro" name="erro" class="form-check-input">
-								<label for="erro">Somente erros</label>
-							</div>
-						</form>
-
-						<h5>Logs: <span class="badge badge-secondary">{{ logProcedureMunicipio.length }}</span></h5>
-						<h5>Erros: <span class="badge badge-danger">{{ logProcedureMunicipioErro.length }}</span></h5>
-						
-						<div class="list-group">
-						  <div :class="['list-group-item list-group-item-action', ml.tipo == 'lpErro' ? 'list-group-item-danger' : '']" v-for="ml in listaLogProcedureMunicipio">
-							<div class="d-flex w-100 justify-content-between">
-							  <h5 class="mb-1">{{ ml.descricao }}</h5>
-							  <small>{{ ml.data }}</small>
-							</div>
-							<p class="mb-1">{{ ml.procedure }}</p>
-							<small><b>{{ ml.tipo }}</b> | id do log no município: <i>{{ ml.idLocal }}</i></small>
-						  </div>
-						</div>
-					</div>				
+		
+		<div v-if="chave">
+			<h2>Municípios</h2>
+			<form>
+				<div class="form-group ">
+					<label for="selectPrazo">Dados no período de: </label>
+					<select v-model="diasMunicipiosLog" id="selectPrazo" name="selectPrazo" class="form-control">
+						<option value="1">24 horas</option>
+						<option value="7">1 semana</option>
+						<option value="30">1 mês</option>
+					</select>
+					<small id="emailHelp" class="form-text text-muted">Intervalo dos dados importados.</small>
 				</div>
-				<div class="tab-pane fade" id="logErro" role="tabpanel" aria-labelledby="logErro-tab">
-				<br />
-					<div v-if="logErroMunicipio">
-						<form class="row">
-							<div class="form-group col-6">
-								<label for="selectPrazoMunicipio">Dados no período de: </label>
-								<select v-model="diasLogErroMunicipio" id="selectPrazoMunicipio" name="selectPrazoMunicipio" class="form-control">
-									<option value="1">24 horas</option>
-									<option value="2">2 dias</option>
-									<option value="3">3 dias</option>
-									<option value="7">1 semana</option>
-									<option value="30">1 mês</option>
-								</select>
-							</div>
-							<div class="form-group col-6">
-								<label for="selectSistema">Sistema: </label>
-								<select v-model="idSistemaLogErro" id="selectSistema" name="selectSistema" class="form-control" v-if="sistemas">
-									<option value="0">[todos]</option>
-									<option :value="s.id" v-for="s in sistemas" v-if="sistemas">{{ s.nome }}</option>
-								</select>
-							</div>
-						</form>
+			</form>
+			
+			<div class="row">
+				<div class="col-4" v-for="ml in municipiosLog">
+					<div class="card">
+						<!-- <h5 class="card-header"> -->
+							<!-- {{ ml.municipio.nome }} -->
+						<!-- </h5> -->
+					  <div class="card-body">
+						<h5 class="card-title">{{ ml.municipio.nome }}</h5>
+						<h6 v-if="diasMunicipiosLog == 1" class="card-subtitle mb-2 text-muted">Nas últimas 24 horas</h6>
+						<h6 v-else class="card-subtitle mb-2 text-muted">Nos últimos {{ diasMunicipiosLog }} dias</h6>
+						<p class="card-text">
+							<div>Logs de Procedures: <span class="badge badge-secondary">{{ ml.qtdLogProcedureTotal }}</span></div>
+							<div>Erros de Procedures: <span class="badge badge-danger">{{ ml.qtdLogProcedureErro }}</span></div>
+							<div>Erros de Sistemas: <span class="badge badge-danger">{{ ml.qtdLogErro }}</span></div>
+						</p>
+						<a href="#" class="btn btn-primary" @click="atualizaLogProcedureMunicipio(ml.municipio), atualizaLogErroMunicipio(ml.municipio)">Detalhes</a>
+					  </div>
+					  <div class="card-footer text-muted">
+						<small>última importação - <i>{{ ml.dataUltimaImportacao }}</i></small>
+					  </div>
+					</div>			
+				</div>
+			</div>
+			<br />
+			<div v-if="municipio">
+				<h2>{{ municipio.nome }}</h2>
+				<ul class="nav nav-tabs" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link active" id="logProcedure-tab" data-toggle="tab" href="#logProcedure" role="tab" aria-controls="home" aria-selected="true">Log Procedure</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="logErro-tab" data-toggle="tab" href="#logErro" role="tab" aria-controls="home" aria-selected="true">Log Erro Sistema</a>
+					</li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane fade show active" id="logProcedure" role="tabpanel" aria-labelledby="logProcedure-tab">
+						<br />
+						<div v-if="logProcedureMunicipio">
+							<form>
+								<div class="form-group">
+									<label for="selectPrazoMunicipio">Dados no período de: </label>
+									<select v-model="diasLogProcedureMunicipio" id="selectPrazoMunicipio" name="selectPrazoMunicipio" class="form-control">
+										<option value="1">24 horas</option>
+										<option value="2">2 dias</option>
+										<option value="3">3 dias</option>
+										<option value="7">1 semana</option>
+										<option value="30">1 mês</option>
+									</select>
+								</div>
+								<div class="form-group form-check">
+									<input v-model="somenteErro" type="checkbox" id="erro" name="erro" class="form-check-input">
+									<label for="erro">Somente erros</label>
+								</div>
+							</form>
 
-						<h5>Erros: <span class="badge badge-danger">{{ listaLogErroMunicipio.length }}</span></h5>
-						
-						<div class="list-group">
-						  <div class="list-group-item list-group-item-action" v-for="ml in listaLogErroMunicipio">
-							<div class="d-flex w-100 justify-content-between">
-							  <h5 class="mb-1">{{ ml.erro }}</h5>
-							  <small>{{ ml.data }}</small>
+							<h5>Logs: <span class="badge badge-secondary">{{ logProcedureMunicipio.length }}</span></h5>
+							<h5>Erros: <span class="badge badge-danger">{{ logProcedureMunicipioErro.length }}</span></h5>
+							
+							<div class="list-group">
+							  <div :class="['list-group-item list-group-item-action', ml.tipo == 'lpErro' ? 'list-group-item-danger' : '']" v-for="ml in listaLogProcedureMunicipio">
+								<div class="d-flex w-100 justify-content-between">
+								  <h5 class="mb-1">{{ ml.descricao }}</h5>
+								  <small>{{ ml.data }}</small>
+								</div>
+								<p class="mb-1">{{ ml.procedure }}</p>
+								<small><b>{{ ml.tipo }}</b> | id do log no município: <i>{{ ml.idLocal }}</i></small>
+							  </div>
 							</div>
-							<p class="mb-1">{{ ml.stacktrace }}</p>
-							<small><b>{{ ml.sistema.nome }}</b> | id do log no município: <i>{{ ml.idLocal }}</i></small><br/>
-							<small><a :href="ml.url" target="_blank">{{ ml.url }}</a> <span v-show="ml.pessoa">- Pessoa: {{ ml.pessoa }}</span></small><br/>
-						  </div>
-						</div>
-					</div>				
+						</div>				
+					</div>
+					<div class="tab-pane fade" id="logErro" role="tabpanel" aria-labelledby="logErro-tab">
+					<br />
+						<div v-if="logErroMunicipio">
+							<form class="row">
+								<div class="form-group col-6">
+									<label for="selectPrazoMunicipio">Dados no período de: </label>
+									<select v-model="diasLogErroMunicipio" id="selectPrazoMunicipio" name="selectPrazoMunicipio" class="form-control">
+										<option value="1">24 horas</option>
+										<option value="2">2 dias</option>
+										<option value="3">3 dias</option>
+										<option value="7">1 semana</option>
+										<option value="30">1 mês</option>
+									</select>
+								</div>
+								<div class="form-group col-6">
+									<label for="selectSistema">Sistema: </label>
+									<select v-model="idSistemaLogErro" id="selectSistema" name="selectSistema" class="form-control" v-if="sistemas">
+										<option value="0">[todos]</option>
+										<option :value="s.id" v-for="s in sistemas" v-if="sistemas">{{ s.nome }}</option>
+									</select>
+								</div>
+							</form>
+
+							<h5>Erros: <span class="badge badge-danger">{{ listaLogErroMunicipio.length }}</span></h5>
+							
+							<div class="list-group">
+							  <div class="list-group-item list-group-item-action" v-for="ml in listaLogErroMunicipio">
+								<div class="d-flex w-100 justify-content-between">
+								  <h5 class="mb-1">{{ ml.erro }}</h5>
+								  <small>{{ ml.data }}</small>
+								</div>
+								<p class="mb-1">{{ ml.stacktrace }}</p>
+								<small><b>{{ ml.sistema.nome }}</b> | id do log no município: <i>{{ ml.idLocal }}</i></small><br/>
+								<small><a :href="ml.url" target="_blank">{{ ml.url }}</a> <span v-show="ml.pessoa">- Pessoa: {{ ml.pessoa }}</span></small><br/>
+							  </div>
+							</div>
+						</div>				
+					</div>
 				</div>
 			</div>
 		</div>
@@ -154,15 +167,17 @@
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>	
 	<script>
-		//var host = "https://localhost:44361/"
-		var host = "https://logwebapi.azurewebsites.net/"
-		
+		//var host = "https://localhost:44361/";
+		var host = "https://logwebapi.azurewebsites.net/";
+	
 		var app = new Vue({
 			el: '#app',
 			data: {
+				chave: '',
+				
 				municipio: null,
 				municipiosLog: [],
-				diasMunicipiosLog: 7,
+				diasMunicipiosLog: 1,
 				logProcedureMunicipio: null,
 				somenteErro: true,
 				diasLogProcedureMunicipio: 1,
@@ -235,11 +250,15 @@
 							this.municipiosLog = response.data;
 						})
 						.catch(err => { console.log(err) })
-				}
+				},
+				atualizaChave() {
+					axios.defaults.headers.common['chave'] = this.chave;
+					
+					this.atualizaMunicipiosLog();
+					this.atualizaSistema();
+				},
 			},
 			mounted() {
-				this.atualizaMunicipiosLog();
-				this.atualizaSistema();
 			},
 		});
 
